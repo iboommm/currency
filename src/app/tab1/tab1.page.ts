@@ -124,10 +124,13 @@ export class Tab1Page {
       header: 'Options',
       buttons: [
         {
-          text: 'Favorite',
+          text: item.favorite ? 'Unfavorite' : 'Favorite',
           icon: 'heart',
           handler: () => {
-            item.favorite = true;
+            item.favorite = !item.favorite;
+            this.list = this.list.sort(function (a, b) {
+              return Number(b.favorite) - Number(a.favorite);
+            });
           },
         },
         {
