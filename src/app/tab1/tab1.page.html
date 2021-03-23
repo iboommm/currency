@@ -1,6 +1,19 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title> Currencies </ion-title>
+    <ion-buttons *ngIf="!searchToggle" slot="secondary">
+      <ion-button (click)="searchToggle = !searchToggle">
+        <ion-icon slot="icon-only" name="search"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title *ngIf="!searchToggle">Currencies</ion-title>
+    <ion-searchbar
+      *ngIf="searchToggle"
+      class="animated fadeInDown faster p-2"
+      showCancelButton="always"
+      [(ngModel)]="searchTxt"
+      (ionChange)="doSearch($event);"
+      (ionCancel)="searchToggle = !searchToggle"
+    ></ion-searchbar>
   </ion-toolbar>
 </ion-header>
 
@@ -35,7 +48,7 @@
 
     <ng-container *ngFor="let item of list">
       <app-box-currency
-        *ngIf="selected"
+        *ngIf="selected && doFilted(item)"
         [item]="item"
         [selected]="selected"
         (click)="presentActionSheet(item)"

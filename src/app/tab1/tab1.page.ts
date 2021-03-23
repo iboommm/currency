@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { AlertController, ActionSheetController } from '@ionic/angular';
+import axios from 'axios';
 
 import { CurrencyModel } from '../models/CurrencyModel';
 
@@ -11,6 +12,9 @@ import { CurrencyModel } from '../models/CurrencyModel';
 })
 export class Tab1Page {
   selected: CurrencyModel;
+
+  searchToggle: boolean = false;
+  searchTxt: string = '';
 
   list: CurrencyModel[] = [
     {
@@ -76,7 +80,6 @@ export class Tab1Page {
     if (!this.selected) {
       this.selected = this.list[0];
       this.selected.editable = true;
-      this.list = this.list.filter((x) => x.name !== this.selected.name);
     }
     await this.getNewRates();
   }
@@ -105,8 +108,8 @@ export class Tab1Page {
     event.target.complete();
   }
 
-  async getNewRates() {
-    const newRates = await this.getRates('USD');
+  async getNewRates(base = 'USD') {
+    const newRates = await this.getRates(base);
     this.list = this.list.map((x) => {
       x.rate = newRates['rates'][x.key];
       return x;
@@ -114,8 +117,13 @@ export class Tab1Page {
   }
 
   getRates(base: string): Promise<object> {
-    return new Promise(async (resolve, reject) => {
-      resolve(this.rate);
+    return new Promise((resolve, reject) => {
+      axios
+        .get('https://api.exchangeratesapi.io/latest?base=' + base)
+        .then((x) => {
+          resolve(x.data);
+        })
+        .catch((e) => reject(e));
     });
   }
 
@@ -123,6 +131,22 @@ export class Tab1Page {
     const actionSheet = await this.actionSheetController.create({
       header: 'Options',
       buttons: [
+        {
+          text: 'Base currency',
+          icon: 'push-outline',
+          handler: () => {
+            this.list = this.list.map((x) => {
+              x.editable = false;
+              return x;
+            });
+
+            this.selected = item;
+            this.selected.value = '1000';
+            this.selected.editable = true;
+
+            this.getNewRates(this.selected.key);
+          },
+        },
         {
           text: item.favorite ? 'Unfavorite' : 'Favorite',
           icon: 'heart',
@@ -133,6 +157,7 @@ export class Tab1Page {
             });
           },
         },
+
         {
           text: 'Cancel',
           icon: 'close',
@@ -159,5 +184,24 @@ export class Tab1Page {
       await alert.present();
       resolve();
     });
+  }
+
+  doSearch(event) {
+    console.log(this.searchTxt);
+  }
+
+  doFilted(item) {
+    if (item.name === this.selected.name) {
+      return false;
+    }
+    if (
+      this.searchTxt === '' ||
+      item.name
+        .toLocaleLowerCase()
+        .includes(this.searchTxt.toLocaleLowerCase()) ||
+      item.key.toLocaleLowerCase().includes(this.searchTxt.toLocaleLowerCase())
+    ) {
+      return true;
+    }
   }
 }
