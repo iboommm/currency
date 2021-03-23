@@ -31,7 +31,13 @@
                 "output": "./svg"
               }
             ],
-            "styles": ["src/theme/variables.scss", "src/global.scss"],
+            "styles": [
+              "src/theme/variables.scss",
+              "src/global.scss",
+              "src/assets/css/animate.min.css",
+              "src/assets/css/demo.css",
+              "src/assets/sass/core.scss"
+            ],
             "scripts": []
           },
           "configurations": {
