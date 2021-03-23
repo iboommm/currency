@@ -104,7 +104,7 @@ export class Tab1Page {
   }
 
   async doRefresh(event) {
-    await this.presentAlert();
+    await this.getNewRates(this.selected.key);
     event.target.complete();
   }
 
