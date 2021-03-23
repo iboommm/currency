@@ -9,19 +9,23 @@ import { CurrencyModel } from '../models/CurrencyModel';
 })
 export class BoxCurrencyComponent implements OnInit {
   @Input() item: CurrencyModel;
+  @Input() selected: CurrencyModel;
 
   @ViewChild('input', null) input: IonInput;
 
-  formatter = new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-  });
-
   constructor() {}
 
-  ngOnInit() {
+  ngOnInit() {}
+
+  ngDoCheck() {
+    if (!this.item.editable) {
+      this.item.value = (
+        Number(this.selected.value.replace(/[^0-9.]/g, '')) * this.item.rate
+      ).toFixed(2);
+    }
+
     this.item.value = this.numberWithCommas(
-      this.item.value.replace(/\D+/g, '')
+      this.item.value.replace(/[^0-9.]/g, '')
     );
   }
 

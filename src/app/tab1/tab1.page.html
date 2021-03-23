@@ -16,14 +16,30 @@
 
   <ion-list>
     <ion-list-header> Base currency </ion-list-header>
-    <app-box-currency [item]="selected"></app-box-currency>
+    <ng-container *ngIf="selected">
+      <app-box-currency [(item)]="selected"></app-box-currency
+    ></ng-container>
+    <div *ngIf="!selected">
+      <div class="ion-padding custom-skeleton">
+        <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+        <ion-skeleton-text animated></ion-skeleton-text>
+        <ion-skeleton-text animated style="width: 88%"></ion-skeleton-text>
+        <ion-skeleton-text animated style="width: 70%"></ion-skeleton-text>
+        <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+      </div>
+    </div>
   </ion-list>
 
   <ion-list>
     <ion-list-header> List currencies </ion-list-header>
 
     <ng-container *ngFor="let item of list">
-      <app-box-currency [item]="item"></app-box-currency>
+      <app-box-currency
+        *ngIf="selected"
+        [item]="item"
+        [selected]="selected"
+        (click)="presentActionSheet(item)"
+      ></app-box-currency>
     </ng-container>
   </ion-list>
 </ion-content>
