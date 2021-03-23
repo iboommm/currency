@@ -1,5 +1,8 @@
 {
   "name": "xurrency",
-  "integrations": {},
+  "integrations": {
+    "cordova": {},
+    "capacitor": {}
+  },
   "type": "angular"
 }

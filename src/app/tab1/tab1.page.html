@@ -5,74 +5,25 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
   <ion-header collapse="condense">
     <ion-toolbar>
       <ion-title size="large">Currencies</ion-title>
     </ion-toolbar>
   </ion-header>
 
-  <div class="col-md-12">
-    <div class="card">
-      <div class="card-content">
-        <div class="card-body p-1">
-          <div class="media p-0">
-            <img
-              class="rounded mr-3 align-self-center"
-              src="assets/img/portrait/small/avatar-s-12.png"
-              width="70"
-              height="36"
-              alt="avatar"
-            />
-            <div class="media-body text-muted">
-              <div class="row">
-                <div class="col">
-                  <h5 class="mb-1">USD</h5>
-                  <p class="m-0">test</p>
-                </div>
-                <div class="col-4 text-right">
-                  <button
-                    type="button"
-                    class="btn btn-outline-primary btn-block mr-1 mb-1"
-                  >
-                    Primary
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-content">
-        <div class="card-body p-1">
-          <div class="media p-0">
-            <img
-              class="rounded mr-3 align-self-center"
-              src="assets/img/portrait/small/avatar-s-12.png"
-              width="70"
-              height="36"
-              alt="avatar"
-            />
-            <div class="media-body text-muted">
-              <div class="row">
-                <div class="col">
-                  <h5 class="mb-1">THB</h5>
-                  <p class="m-0">test</p>
-                </div>
-                <div class="col-4 text-right">
-                  <button
-                    type="button"
-                    class="btn btn-outline-primary btn-block mr-1 mb-1"
-                  >
-                    Primary
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+  <ion-list>
+    <ion-list-header> Base currency </ion-list-header>
+    <app-box-currency [item]="selected"></app-box-currency>
+  </ion-list>
+
+  <ion-list>
+    <ion-list-header> List currencies </ion-list-header>
+
+    <ng-container *ngFor="let item of list">
+      <app-box-currency [item]="item"></app-box-currency>
+    </ng-container>
+  </ion-list>
 </ion-content>
