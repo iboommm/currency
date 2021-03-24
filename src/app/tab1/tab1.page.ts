@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { AlertController, ActionSheetController } from '@ionic/angular';
-import axios from 'axios';
+import { CurrenciesService } from '../currencies.service';
 
 import { CurrencyModel } from '../models/CurrencyModel';
 
@@ -69,17 +69,28 @@ export class Tab1Page {
   constructor(
     public alertController: AlertController,
     public http: HttpClient,
-    public actionSheetController: ActionSheetController
+    public actionSheetController: ActionSheetController,
+    public currenciesServie: CurrenciesService
   ) {
     this.main();
   }
 
   async main() {
-    await this.getNewRates();
-    this.list = await this.getAllCurrencies();
-    if (!this.selected) {
+    const list = localStorage.getItem('list');
+    if (!list) {
+      this.list = await this.getAllCurrencies();
+      localStorage.setItem('list', JSON.stringify(this.list));
+    } else {
+      this.list = JSON.parse(localStorage.getItem('list'));
+    }
+
+    const selected = localStorage.getItem('selected');
+    if (!selected) {
       this.selected = this.list[0];
       this.selected.editable = true;
+      localStorage.setItem('selected', JSON.stringify(this.selected));
+    } else {
+      this.selected = JSON.parse(localStorage.getItem('selected'));
     }
     await this.getNewRates();
   }
@@ -108,22 +119,14 @@ export class Tab1Page {
     event.target.complete();
   }
 
-  async getNewRates(base = 'USD') {
-    const newRates = await this.getRates(base);
+  async getNewRates(base: string = '') {
+    if (!base) {
+      base = this.selected?.key || 'USD';
+    }
+    const newRates = await this.currenciesServie.getRates(base);
     this.list = this.list.map((x) => {
       x.rate = newRates['rates'][x.key];
       return x;
-    });
-  }
-
-  getRates(base: string): Promise<object> {
-    return new Promise((resolve, reject) => {
-      axios
-        .get('https://api.exchangeratesapi.io/latest?base=' + base)
-        .then((x) => {
-          resolve(x.data);
-        })
-        .catch((e) => reject(e));
     });
   }
 
@@ -144,6 +147,7 @@ export class Tab1Page {
             this.selected.value = '1000';
             this.selected.editable = true;
 
+            localStorage.setItem('selected', JSON.stringify(this.selected));
             this.getNewRates(this.selected.key);
           },
         },
@@ -155,6 +159,7 @@ export class Tab1Page {
             this.list = this.list.sort(function (a, b) {
               return Number(b.favorite) - Number(a.favorite);
             });
+            localStorage.setItem('list', JSON.stringify(this.list));
           },
         },
 
@@ -184,10 +189,6 @@ export class Tab1Page {
       await alert.present();
       resolve();
     });
-  }
-
-  doSearch(event) {
-    console.log(this.searchTxt);
   }
 
   doFilted(item) {
