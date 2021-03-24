@@ -22,7 +22,7 @@ export class Tab1Page {
   constructor(
     public alertController: AlertController,
     public actionSheetController: ActionSheetController,
-    public currenciesServie: CurrenciesService
+    public currenciesService: CurrenciesService
   ) {
     this.main();
   }
@@ -30,8 +30,8 @@ export class Tab1Page {
   async main() {
     const list = localStorage.getItem('list');
     if (!list) {
-      this.list = await this.currenciesServie.getAllCurrencies();
-      localStorage.setItem('list', JSON.stringify(this.list));
+      this.list = await this.currenciesService.getAllCurrencies();
+      this.currenciesService.setListToLocalStorage(this.list);
     } else {
       this.list = JSON.parse(localStorage.getItem('list'));
     }
@@ -40,7 +40,7 @@ export class Tab1Page {
     if (!selected) {
       this.selected = this.list[0];
       this.selected.editable = true;
-      localStorage.setItem('selected', JSON.stringify(this.selected));
+      this.currenciesService.setSelectedToLocalStorage(this.selected);
     } else {
       this.selected = JSON.parse(localStorage.getItem('selected'));
     }
@@ -56,7 +56,7 @@ export class Tab1Page {
     if (!base) {
       base = this.selected?.key || 'USD';
     }
-    const newRates = await this.currenciesServie.getRates(base);
+    const newRates = await this.currenciesService.getRates(base);
     this.list = this.list.map((x) => {
       x.rate = newRates['rates'][x.key];
       return x;
@@ -80,8 +80,9 @@ export class Tab1Page {
             this.selected.value = '1000';
             this.selected.editable = true;
 
-            localStorage.setItem('selected', JSON.stringify(this.selected));
             this.getNewRates(this.selected.key);
+            this.currenciesService.setSelectedToLocalStorage(this.selected);
+            this.currenciesService.setListToLocalStorage(this.list);
           },
         },
         {
@@ -92,7 +93,7 @@ export class Tab1Page {
             this.list = this.list.sort(function (a, b) {
               return Number(b.favorite) - Number(a.favorite);
             });
-            localStorage.setItem('list', JSON.stringify(this.list));
+            this.currenciesService.setListToLocalStorage(this.list);
           },
         },
 

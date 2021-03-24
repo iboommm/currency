@@ -38,4 +38,12 @@ export class CurrenciesService {
       });
     });
   }
+
+  setListToLocalStorage(list) {
+    localStorage.setItem('list', JSON.stringify(list));
+  }
+
+  setSelectedToLocalStorage(selected) {
+    localStorage.setItem('selected', JSON.stringify(selected));
+  }
 }
