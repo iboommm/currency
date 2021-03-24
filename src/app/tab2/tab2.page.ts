@@ -1,8 +1,10 @@
-import { Component, Input } from '@angular/core';
+import { Component } from '@angular/core';
 import { CurrenciesService } from '../currencies.service';
 import { CurrencyModel } from '../models/CurrencyModel';
-import { ModalController } from '@ionic/angular';
+import { ModalController, LoadingController } from '@ionic/angular';
 import { ChartComponent } from '../chart/chart.component';
+import { HistoricalService } from '../historical.service';
+import * as _ from 'lodash';
 
 @Component({
   selector: 'app-tab2',
@@ -10,11 +12,16 @@ import { ChartComponent } from '../chart/chart.component';
   styleUrls: ['tab2.page.scss'],
 })
 export class Tab2Page {
+  selected: CurrencyModel;
   list: CurrencyModel[] = [];
+
+  loading;
 
   constructor(
     public currenciesService: CurrenciesService,
-    public modalController: ModalController
+    public historicalService: HistoricalService,
+    public modalController: ModalController,
+    public loadingController: LoadingController
   ) {
     this.main();
   }
@@ -27,14 +34,61 @@ export class Tab2Page {
     } else {
       this.list = JSON.parse(localStorage.getItem('list'));
     }
+
+    const selected = localStorage.getItem('selected');
+    if (!selected) {
+      this.selected = this.list[0];
+      this.selected.editable = true;
+      this.currenciesService.setSelectedToLocalStorage(this.selected);
+    } else {
+      this.selected = JSON.parse(localStorage.getItem('selected'));
+    }
   }
 
   async presentModal(item) {
+    this.loading = await this.loadingController.create({
+      message: 'Please wait...',
+    });
+    await this.loading.present();
+    let result = await this.getHistorical(
+      this.selected.key,
+      '2021-02-21',
+      '2021-03-21',
+      item.key
+    );
+
+    result = _.sortBy(result, ['label']).reverse();
+
+    const labels = _.map(result, (x) => {
+      return x.label;
+    });
+    const series = _.map(result, (x) => {
+      return x.series;
+    });
     const modal = await this.modalController.create({
       component: ChartComponent,
       swipeToClose: true,
-      componentProps: { item },
+      componentProps: { item, labels, series },
     });
+    await this.loading.dismiss();
     return await modal.present();
+  }
+
+  async getHistorical(
+    base: string,
+    startDate: string,
+    endDate: string,
+    target: string
+  ) {
+    return new Promise((resolve, reject) => {
+      this.historicalService
+        .getHistorical(base, startDate, endDate, target)
+        .then((x) => {
+          resolve(x);
+        })
+        .catch((e) => {
+          reject(e);
+        });
+    });
   }
 }

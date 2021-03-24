@@ -17,7 +17,7 @@
   <ion-list>
     <ion-list-header> Base currency </ion-list-header>
     <ng-container *ngIf="selected">
-      <app-box-currency [(item)]="selected"></app-box-currency
+      <app-box-currency mode="number" [(item)]="selected"></app-box-currency
     ></ng-container>
     <div *ngIf="!selected">
       <div class="ion-padding custom-skeleton">

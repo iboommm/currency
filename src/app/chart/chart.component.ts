@@ -22,100 +22,109 @@ export interface Chart {
 })
 export class ChartComponent {
   @Input() item: CurrencyModel;
+  @Input() labels: string[];
+  @Input() series: number[];
+
+  lineArea2: Chart;
 
   constructor(public modalController: ModalController) {}
 
-  lineArea2: Chart = {
-    type: 'Line',
-    data: data['lineArea2'],
-    options: {
-      showArea: true,
-      fullWidth: true,
-      lineSmooth: Chartist.Interpolation.none(),
-      axisX: {
-        showGrid: false,
+  ngOnInit() {
+    console.log({
+      labels: this.labels,
+      series: this.series,
+    });
+    this.lineArea2 = {
+      type: 'Line',
+      data: {
+        labels: this.labels,
+        series: [this.series],
       },
-      axisY: {
-        low: 0,
-        scaleMinSpace: 50,
+      options: {
+        showArea: true,
+        fullWidth: true,
+        lineSmooth: Chartist.Interpolation.none(),
+        axisX: {
+          showGrid: false,
+        },
+        chartPadding: { top: 0, right: 20, bottom: 0, left: 20 },
       },
-      chartPadding: { top: 0, right: 25, bottom: 0, left: 0 },
-    },
-    responsiveOptions: [
-      [
-        'screen and (max-width: 640px) and (min-width: 381px)',
-        {
-          axisX: {
-            labelInterpolationFnc: function (value, index) {
-              return index % 2 === 0 ? value : null;
+      responsiveOptions: [
+        [
+          'screen and (max-width: 640px) and (min-width: 381px)',
+          {
+            axisX: {
+              labelInterpolationFnc: function (value, index) {
+                return index % 2 === 0 ? value : null;
+              },
             },
           },
-        },
-      ],
-      [
-        'screen and (max-width: 380px)',
-        {
-          axisX: {
-            labelInterpolationFnc: function (value, index) {
-              return index % 3 === 0 ? value : null;
+        ],
+        [
+          'screen and (max-width: 380px)',
+          {
+            axisX: {
+              labelInterpolationFnc: function (value, index) {
+                return index % 3 === 0 ? value : null;
+              },
             },
           },
-        },
+        ],
       ],
-    ],
-    events: {
-      created(data: any): void {
-        var defs = data.svg.elem('defs');
-        defs
-          .elem('linearGradient', {
-            id: 'gradient1',
-            x1: 0,
-            y1: 1,
-            x2: 0,
-            y2: 0,
-          })
-          .elem('stop', {
-            offset: 0.2,
-            'stop-color': '#FFF',
-          })
-          .parent()
-          .elem('stop', {
-            offset: 1,
-            'stop-color': '#2F8BE6',
-          });
+      events: {
+        created(data: any): void {
+          var defs = data.svg.elem('defs');
+          defs
+            .elem('linearGradient', {
+              id: 'gradient1',
+              x1: 0,
+              y1: 1,
+              x2: 0,
+              y2: 0,
+            })
+            .elem('stop', {
+              offset: 0.2,
+              'stop-color': '#FFF',
+            })
+            .parent()
+            .elem('stop', {
+              offset: 1,
+              'stop-color': '#2F8BE6',
+            });
 
-        defs
-          .elem('linearGradient', {
-            id: 'gradient2',
-            x1: 0,
-            y1: 1,
-            x2: 0,
-            y2: 0,
-          })
-          .elem('stop', {
-            offset: 0.5,
-            'stop-color': '#FFF',
-          })
-          .parent()
-          .elem('stop', {
-            offset: 1,
-            'stop-color': '#F77E17',
-          });
+          defs
+            .elem('linearGradient', {
+              id: 'gradient2',
+              x1: 0,
+              y1: 1,
+              x2: 0,
+              y2: 0,
+            })
+            .elem('stop', {
+              offset: 0.5,
+              'stop-color': '#FFF',
+            })
+            .parent()
+            .elem('stop', {
+              offset: 1,
+              'stop-color': '#F77E17',
+            });
+        },
+        draw(data: any): void {
+          var circleRadius = 6;
+          if (data.type === 'point') {
+            var circle = new Chartist.Svg('circle', {
+              cx: data.x,
+              cy: data.y,
+              r: circleRadius,
+              class: 'ct-point-circle',
+            });
+            data.element.replace(circle);
+          }
+        },
       },
-      draw(data: any): void {
-        var circleRadius = 6;
-        if (data.type === 'point') {
-          var circle = new Chartist.Svg('circle', {
-            cx: data.x,
-            cy: data.y,
-            r: circleRadius,
-            class: 'ct-point-circle',
-          });
-          data.element.replace(circle);
-        }
-      },
-    },
-  };
+    };
+  }
 
   dismissModal() {
     this.modalController.dismiss();
