@@ -10,12 +10,16 @@
             <img [src]="item.image" alt="" />
           </div>
         </div>
-        <div class="col-4 align-self-center">
+        <div
+          [ngClass]="mode === 'number' ? 'col-4 ' : 'col'"
+          class="align-self-center"
+        >
           <b>{{ item.key }}</b
           ><br />
           {{ item.name }}
         </div>
         <div
+          *ngIf="mode === 'number'"
           [ngClass]="
             item.editable
               ? 'bg-light-primary  border-primary'

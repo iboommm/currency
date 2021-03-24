@@ -36,6 +36,7 @@
     <ng-container *ngFor="let item of list">
       <app-box-currency
         *ngIf="selected && doFilted(item)"
+        mode="number"
         [item]="item"
         [selected]="selected"
         (click)="presentActionSheet(item)"

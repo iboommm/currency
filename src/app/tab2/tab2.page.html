@@ -10,4 +10,11 @@
       <ion-title size="large">Historical</ion-title>
     </ion-toolbar>
   </ion-header>
+
+  <ng-container *ngFor="let item of list">
+    <app-box-currency
+      [item]="item"
+      (click)="presentModal(item)"
+    ></app-box-currency>
+  </ng-container>
 </ion-content>

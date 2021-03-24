@@ -1,6 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { CurrenciesService } from '../currencies.service';
 import { CurrencyModel } from '../models/CurrencyModel';
+import { ModalController } from '@ionic/angular';
+import { ChartComponent } from '../chart/chart.component';
 
 @Component({
   selector: 'app-tab2',
@@ -10,7 +12,10 @@ import { CurrencyModel } from '../models/CurrencyModel';
 export class Tab2Page {
   list: CurrencyModel[] = [];
 
-  constructor(public currenciesService: CurrenciesService) {
+  constructor(
+    public currenciesService: CurrenciesService,
+    public modalController: ModalController
+  ) {
     this.main();
   }
 
@@ -22,5 +27,14 @@ export class Tab2Page {
     } else {
       this.list = JSON.parse(localStorage.getItem('list'));
     }
+  }
+
+  async presentModal(item) {
+    const modal = await this.modalController.create({
+      component: ChartComponent,
+      swipeToClose: true,
+      componentProps: { item },
+    });
+    return await modal.present();
   }
 }

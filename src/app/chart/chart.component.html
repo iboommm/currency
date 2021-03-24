@@ -1,0 +1,28 @@
+<ion-header translucent>
+  <ion-toolbar>
+    <ion-title>Historical - {{ item.name }} </ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismissModal()">Close</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="card">
+    <div class="card-content">
+      <div class="card-body">
+        <div id="line-area2" class="lineArea2">
+          <x-chartist
+            class="height-400"
+            [data]="lineArea2.data"
+            [type]="lineArea2.type"
+            [options]="lineArea2.options"
+            [responsiveOptions]="lineArea2.responsiveOptions"
+            [events]="lineArea2.events"
+          >
+          </x-chartist>
+        </div>
+      </div>
+    </div>
+  </div>
+</ion-content>

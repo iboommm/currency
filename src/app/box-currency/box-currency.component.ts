@@ -10,6 +10,7 @@ import { CurrencyModel } from '../models/CurrencyModel';
 export class BoxCurrencyComponent implements OnInit {
   @Input() item: CurrencyModel;
   @Input() selected: CurrencyModel;
+  @Input() mode: string;
 
   @ViewChild('input', null) input: IonInput;
 
@@ -18,15 +19,17 @@ export class BoxCurrencyComponent implements OnInit {
   ngOnInit() {}
 
   ngDoCheck() {
-    if (!this.item.editable) {
-      this.item.value = (
-        Number(this.selected.value.replace(/[^0-9.]/g, '')) * this.item.rate
-      ).toFixed(2);
-    }
+    if (this.mode === 'number') {
+      if (!this.item.editable) {
+        this.item.value = (
+          Number(this.selected.value.replace(/[^0-9.]/g, '')) * this.item.rate
+        ).toFixed(2);
+      }
 
-    this.item.value = this.numberWithCommas(
-      this.item.value.replace(/[^0-9.]/g, '')
-    );
+      this.item.value = this.numberWithCommas(
+        this.item.value.replace(/[^0-9.]/g, '')
+      );
+    }
   }
 
   async doFocus(event) {
