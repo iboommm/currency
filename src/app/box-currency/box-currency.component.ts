@@ -12,7 +12,7 @@ export class BoxCurrencyComponent implements OnInit {
   @Input() selected: CurrencyModel;
   @Input() mode: string;
 
-  @ViewChild('input', null) input: IonInput;
+  @ViewChild('input') input: IonInput;
 
   constructor() {}
 

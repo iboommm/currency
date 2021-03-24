@@ -3,6 +3,7 @@ import { AlertController, ActionSheetController } from '@ionic/angular';
 import { CurrenciesService } from '../currencies.service';
 
 import { CurrencyModel } from '../models/CurrencyModel';
+import { BoxCurrencyComponent } from '../box-currency/box-currency.component';
 
 @Component({
   selector: 'app-tab1',
