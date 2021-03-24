@@ -5,7 +5,6 @@ import { ModalController, LoadingController } from '@ionic/angular';
 import { ChartComponent } from '../chart/chart.component';
 import { HistoricalService } from '../historical.service';
 import * as moment from 'moment';
-import * as _ from 'lodash';
 
 @Component({
   selector: 'app-tab2',
@@ -15,6 +14,9 @@ import * as _ from 'lodash';
 export class Tab2Page {
   selected: CurrencyModel;
   list: CurrencyModel[] = [];
+
+  labels: string[];
+  series: number[];
 
   loading;
 
@@ -52,31 +54,54 @@ export class Tab2Page {
     });
     await this.loading.present();
 
-    const startDate = moment().subtract(1, 'months').format('yyyy-MM-DD');
-    const endDate = moment().format('yyyy-MM-DD');
+    const { labels, series } = await this.historicalService.setHistorical(item);
+    this.labels = labels;
+    this.series = series;
 
-    let result = await this.getHistorical(
-      this.selected.key,
-      startDate,
-      endDate,
-      item.key
-    );
-
-    result = _.sortBy(result, ['label']).reverse();
-
-    const labels = _.map(result, (x) => {
-      return x.label;
-    });
-    const series = _.map(result, (x) => {
-      return x.series;
-    });
     const modal = await this.modalController.create({
       component: ChartComponent,
       swipeToClose: true,
-      componentProps: { item, labels, series },
+      componentProps: {
+        item,
+        labels: this.labels,
+        series: this.series,
+        doChangeDate: this.doChangeDate,
+      },
     });
     await this.loading.dismiss();
     return await modal.present();
+  }
+
+  async doChangeDate(filter, item) {
+    this.loading = await this.loadingController.create({
+      message: 'Please wait...',
+    });
+    await this.loading.present();
+    const number = filter.split('')[0];
+    let mode = filter.split('')[1];
+
+    if (mode === 'D') {
+      mode = 'days';
+    }
+    if (mode === 'M') {
+      mode = 'months';
+    }
+    if (mode === 'Y') {
+      mode = 'years';
+    }
+
+    const startDate = moment().subtract(number, mode).format('yyyy-MM-DD');
+    const endDate = moment().format('yyyy-MM-DD');
+
+    const { labels, series } = await this.historicalService.setHistorical(
+      item,
+      startDate,
+      endDate
+    );
+
+    this.labels = labels;
+    this.series = series;
+    await this.loading.dismiss();
   }
 
   async getHistorical(

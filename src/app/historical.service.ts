@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import axios from 'axios';
-import { CurrencyModel } from './models/CurrencyModel';
+import * as moment from 'moment';
+import * as _ from 'lodash';
 
 @Injectable({
   providedIn: 'root',
@@ -28,5 +29,32 @@ export class HistoricalService {
         })
         .catch((e) => reject(e));
     });
+  }
+
+  async setHistorical(item, startDate = null, endDate = null) {
+    if (!startDate && !endDate) {
+      startDate = moment().subtract(1, 'months').format('yyyy-MM-DD');
+      endDate = moment().format('yyyy-MM-DD');
+    }
+
+    const selected = JSON.parse(localStorage.getItem('selected'));
+
+    let result = await this.getHistorical(
+      selected.key,
+      startDate,
+      endDate,
+      item.key
+    );
+
+    result = _.sortBy(result, ['label']).reverse();
+
+    const labels = _.map(result, (x) => {
+      return '';
+    });
+    const series = _.map(result, (x) => {
+      return x.series;
+    });
+
+    return { labels, series };
   }
 }

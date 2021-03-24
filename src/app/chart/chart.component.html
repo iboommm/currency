@@ -1,22 +1,71 @@
-<div class="card h-100">
-  <div class="card-content h-100">
-    <div class="card-body h-100">
-      <div id="line-area2" class="lineArea2 h-100">
-        <x-chartist
-          class="h-100"
-          [data]="lineArea2.data"
-          [type]="lineArea2.type"
-          [options]="lineArea2.options"
-          [responsiveOptions]="lineArea2.responsiveOptions"
-          [events]="lineArea2.events"
-        >
-        </x-chartist>
+<ion-content>
+  <ion-progress-bar *ngIf="!initChart" type="indeterminate"></ion-progress-bar>
+  <div *ngIf="initChart" class="card h-80 animated fadeIn">
+    <div class="card-content h-100">
+      <div class="card-body h-100">
+        <div id="line-area2" class="lineArea2 h-100">
+          <x-chartist
+            class="h-100"
+            [data]="chart.data"
+            [type]="chart.type"
+            [options]="chart.options"
+            [responsiveOptions]="chart.responsiveOptions"
+            [events]="chart.events"
+          >
+          </x-chartist>
+        </div>
       </div>
     </div>
   </div>
-</div>
-<div class="p-2">
-  <button class="btn btn-primary btn-block" (click)="dismissModal()">
-    Close
-  </button>
-</div>
+
+  <ion-segment [value]="range" [scrollable]="true">
+    <ion-segment-button
+      value="1D"
+      (click)="range = '1D'; doChangeDate(range, item)"
+    >
+      <ion-label>1D</ion-label>
+    </ion-segment-button>
+    <ion-segment-button
+      value="1W"
+      (click)="range = '1W'; doChangeDate(range, item)"
+    >
+      <ion-label>1W</ion-label>
+    </ion-segment-button>
+    <ion-segment-button
+      value="1M"
+      (click)="range = '1M'; doChangeDate(range, item)"
+    >
+      <ion-label>1M</ion-label>
+    </ion-segment-button>
+    <ion-segment-button
+      value="3M"
+      (click)="range = '3M'; doChangeDate(range, item)"
+    >
+      <ion-label>3M</ion-label>
+    </ion-segment-button>
+    <ion-segment-button
+      value="6M"
+      (click)="range = '6M'; doChangeDate(range, item)"
+    >
+      <ion-label>6M</ion-label>
+    </ion-segment-button>
+    <ion-segment-button
+      value="1Y"
+      (click)="range = '1Y'; doChangeDate(range, item)"
+    >
+      <ion-label>1Y</ion-label>
+    </ion-segment-button>
+    <ion-segment-button
+      value="2Y"
+      (click)="range = '2Y'; doChangeDate(range, item)"
+    >
+      <ion-label>2Y</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+
+  <div class="p-2">
+    <button class="btn btn-primary btn-block" (click)="dismissModal()">
+      Close
+    </button>
+  </div>
+</ion-content>

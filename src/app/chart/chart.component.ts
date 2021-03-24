@@ -1,8 +1,9 @@
-import { ModalController } from '@ionic/angular';
+import { LoadingController, ModalController } from '@ionic/angular';
 import { Component, Input } from '@angular/core';
 import * as Chartist from 'chartist';
 import { ChartType, ChartEvent } from 'ng-chartist';
 import { CurrencyModel } from '../models/CurrencyModel';
+import { HistoricalService } from '../historical.service';
 
 declare var require: any;
 const data: any = require('../../assets/data/chartist.json');
@@ -22,19 +23,30 @@ export interface Chart {
 })
 export class ChartComponent {
   @Input() item: CurrencyModel;
-  @Input() labels: string[];
+  @Input() labels: string[] = [];
   @Input() series: number[];
+  @Input() doChangeDate: Function;
+  @Input() setHistorical: Function;
 
-  lineArea2: Chart;
+  chart: Chart;
+  range: string = '1M';
+  initChart: boolean = false;
+  loading;
 
-  constructor(public modalController: ModalController) {}
+  constructor(
+    public historicalService: HistoricalService,
+    public modalController: ModalController,
+    public loadingController: LoadingController
+  ) {}
 
-  ngOnInit() {
-    console.log({
-      labels: this.labels,
-      series: this.series,
-    });
-    this.lineArea2 = {
+  ngDoCheck() {
+    if (
+      this.chart &&
+      this.chart?.data.series['0'].length === this.series.length
+    ) {
+      return;
+    }
+    this.chart = {
       type: 'Line',
       data: {
         labels: this.labels,
@@ -47,7 +59,7 @@ export class ChartComponent {
         axisX: {
           showGrid: false,
         },
-        chartPadding: { top: 0, right: 20, bottom: 0, left: 20 },
+        chartPadding: { top: 10, right: 20, bottom: 0, left: 20 },
       },
       responsiveOptions: [
         [
@@ -71,59 +83,10 @@ export class ChartComponent {
           },
         ],
       ],
-      events: {
-        created(data: any): void {
-          var defs = data.svg.elem('defs');
-          defs
-            .elem('linearGradient', {
-              id: 'gradient1',
-              x1: 0,
-              y1: 1,
-              x2: 0,
-              y2: 0,
-            })
-            .elem('stop', {
-              offset: 0.2,
-              'stop-color': '#FFF',
-            })
-            .parent()
-            .elem('stop', {
-              offset: 1,
-              'stop-color': '#2F8BE6',
-            });
-
-          defs
-            .elem('linearGradient', {
-              id: 'gradient2',
-              x1: 0,
-              y1: 1,
-              x2: 0,
-              y2: 0,
-            })
-            .elem('stop', {
-              offset: 0.5,
-              'stop-color': '#FFF',
-            })
-            .parent()
-            .elem('stop', {
-              offset: 1,
-              'stop-color': '#F77E17',
-            });
-        },
-        draw(data: any): void {
-          var circleRadius = 6;
-          if (data.type === 'point') {
-            var circle = new Chartist.Svg('circle', {
-              cx: data.x,
-              cy: data.y,
-              r: circleRadius,
-              class: 'ct-point-circle',
-            });
-            data.element.replace(circle);
-          }
-        },
-      },
     };
+    setTimeout(() => {
+      this.initChart = true;
+    }, 500);
   }
 
   dismissModal() {
