@@ -4,6 +4,7 @@ import { CurrencyModel } from '../models/CurrencyModel';
 import { ModalController, LoadingController } from '@ionic/angular';
 import { ChartComponent } from '../chart/chart.component';
 import { HistoricalService } from '../historical.service';
+import * as moment from 'moment';
 import * as _ from 'lodash';
 
 @Component({
@@ -50,10 +51,14 @@ export class Tab2Page {
       message: 'Please wait...',
     });
     await this.loading.present();
+
+    const startDate = moment().subtract(1, 'months').format('yyyy-MM-DD');
+    const endDate = moment().format('yyyy-MM-DD');
+
     let result = await this.getHistorical(
       this.selected.key,
-      '2021-02-21',
-      '2021-03-21',
+      startDate,
+      endDate,
       item.key
     );
 

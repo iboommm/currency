@@ -13,6 +13,7 @@
 
   <ng-container *ngFor="let item of list">
     <app-box-currency
+      *ngIf="item.name !== selected.name"
       [item]="item"
       (click)="presentModal(item)"
     ></app-box-currency>
